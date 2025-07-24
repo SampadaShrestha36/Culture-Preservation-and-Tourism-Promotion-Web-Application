@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}
+  <title>Community</title>
+{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/community_css.css' %}">
+
+<div class="header">
+  <h4></h4>
+  <button class="btn btn-primary rounded-pill" onclick="openSidebar()">
+    <i class="fas fa-plus me-2"></i>Share Experience
+  </button>
+</div>
+
+<!-- Sidebar Overlay -->
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar Form -->
+<div id="sidebarForm">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">Share Your Experience</h5>
+    <button class="btn btn-outline-light btn-sm" onclick="closeSidebar()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <form method="POST" enctype="multipart/form-data" action="{% url 'community' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="title" class="form-label">Title</label>
+      <input type="text" name="title" id="title" class="form-control" placeholder="Experience title">
+    </div>
+    <div class="mb-3">
+      <label for="content" class="form-label">Description</label>
+      <textarea name="content" id="content" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="visit_date" class="form-label">Visit Date</label>
+      <input type="date" name="visit_date" id="visit_date" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input type="text" name="location" id="location" class="form-control" placeholder="Location">
+    </div>
+    <div class="mb-3">
+      <label for="images" class="form-label">Media</label>
+      <input type="file" name="images" id="images" class="form-control" accept="image/*,video/*">
+    </div>
+    <div class="mb-3">
+      <label for="status" class="form-label">Status</label>
+      <select name="status" id="status" class="form-select">
+        <option value="draft">Draft</option>
+        <option value="publish">Publish</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Publish</button>
+  </form>
+</div>
+<!-- contents starts  -->
+
+
+<style>
+    .experiences-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+
+    .experience-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+
+    .experience-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    .card-header {
+        padding: 1.5rem 1.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+    }
+
+    .author-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .author-details h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .author-details small {
+        color: #7f8c8d;
+    }
+
+    .verified-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .card-content {
+        padding: 0 1.5rem;
+    }
+
+    .experience-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 1rem 0;
+        line-height: 1.4;
+    }
+
+    .content-wrapper {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .content-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .experience-content {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .content-preview {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .show-more-btn {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+        font-weight: 500;
+        padding: 0;
+        text-decoration: underline;
+        margin-top: 0.5rem;
+    }
+
+    .show-more-btn:hover {
+        color: #0056b3;
+    }
+
+    .media-container {
+        flex-shrink: 0;
+        width: 200px;
+    }
+
+    .media-wrapper {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .experience-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .experience-image:hover {
+        transform: scale(1.05);
+    }
+
+    .experience-video {
+        width: 100%;
+        height: 150px;
+        border-radius: 12px;
+    }
+
+    .source-info {
+        background: #f8f9fa;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #e9ecef;
+        margin-top: 1rem;
+    }
+
+    .source-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .source-text {
+        color: #495057;
+        margin: 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-wrapper {
+            flex-direction: column;
+        }
+        
+        .media-container {
+            width: 100%;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="experiences-container">
+    <div class="section-header">
+        <h2 class="section-title">Shared Experiences</h2>
+        <p class="section-subtitle">Discover stories and moments from our community</p>
+    </div>
+
+    {% for experience in experiences %}
+    <div class="experience-card">
+        <div class="card-header">
+            <div class="author-info">
+                <div class="author-avatar">
+                    {{ experience.author.username|slice:":2"|upper }}
+                </div>
+                <div class="author-details">
+                    <h6>{{ experience.author.username }}</h6>
+                    <small>
+                        <i class="fas fa-clock"></i>
+                        {{ experience.created_at|naturaltime }}
+                    </small>
+                </div>
+            </div>
+            {% if experience.verified %}
+            <div class="verified-badge">
+                <i class="fas fa-check-circle"></i>
+                Verified
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="card-content">
+            <h4 class="experience-title">{{ experience.title }}</h4>
+            
+            <div class="content-wrapper">
+                <div class="content-text">
+                    <div class="experience-content">
+                        <div class="content-preview" id="content-{{ forloop.counter }}">
+                            {{ experience.content|linebreaks }}
+                        </div>
+                        <button class="show-more-btn" onclick="toggleContent({{ forloop.counter }})">
+                            Show more
+                        </button>
+                    </div>
+                </div>
+                
+                {% if experience.images %}
+                <div class="media-container">
+                    <div class="media-wrapper">
+                        {% if ".mp4" in experience.images.url %}
+                        <video class="experience-video" controls>
+                            <source src="{{ experience.images.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        {% else %}
+                        <img src="{{ experience.images.url }}" 
+                             class="experience-image" 
+                             alt="{{ experience.title }}"
+                             onclick="openImageModal('{{ experience.images.url }}')">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if experience.source %}
+        <div class="source-info">
+            <span class="source-label">Source:</span>
+            <p class="source-text">{{ experience.source }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h4>No experiences shared yet</h4>
+        <p>Be the first to share your amazing experience with the community!</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="modalImage" class="modal-image" src="" alt="Experience Image" style="width: 100%; height: auto; border-radius: 16px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleContent(id) {
+        const contentDiv = document.getElementById(`content-${id}`);
+        const button = contentDiv.nextElementSibling;
+        
+        if (contentDiv.classList.contains('content-preview')) {
+            contentDiv.classList.remove('content-preview');
+            button.textContent = 'Show less';
+        } else {
+            contentDiv.classList.add('content-preview');
+            button.textContent = 'Show more';
+        }
+    }
+
+    function openImageModal(src) {
+        document.getElementById('modalImage').src = src;
+        new bootstrap.Modal(document.getElementById('imageModal')).show();
+    }
+
+    // Check if content needs "Show more" button
+    document.addEventListener('DOMContentLoaded', function() {
+        const contents = document.querySelectorAll('.content-preview');
+        contents.forEach((content, index) => {
+            const button = content.nextElementSibling;
+            if (content.scrollHeight <= content.clientHeight) {
+                button.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+<!-- contents ends -->
+
+<script>
+  function openSidebar() {
+    document.getElementById('sidebarForm').style.left = '0';
+    document.getElementById('sidebarOverlay').style.display = 'block';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebarForm').style.left = '-100%';
+    document.getElementById('sidebarOverlay').style.display = 'none';
+  }
+</script>
+{% endblock content %}

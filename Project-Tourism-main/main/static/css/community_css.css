@@ -1,0 +1,83 @@
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f1f2f6;
+    margin: 0;
+    padding: 0;
+  }
+  .header {
+    background-color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h4 {
+    font-weight: 700;
+    color: #2d3436;
+  }
+  .btn-primary {
+    background-color: #6c5ce7;
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: #5f4fcf;
+  }
+  #sidebarOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+  }
+  #sidebarForm {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background-color: #2d3436;
+    color: white;
+    padding: 2rem 1.5rem;
+    z-index: 1050;
+    transition: left 0.3s;
+    overflow-y: auto;
+  }
+  .form-control, .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #636e72;
+    color: white;
+  }
+  .form-control:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+  }
+  .experience-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .experience-meta {
+    font-size: 0.85rem;
+    color: #636e72;
+  }
+  .badge-verified {
+    background-color: #00b894;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+  }
+
+
+
+  /* ------------ */
